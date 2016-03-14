@@ -69,7 +69,7 @@ while year<end_year+1:
 
     # Iterate over seed_sites
     for seed_site in range(len(hdr)):
-        out.append(nc_day.variables['tam'][site_offs[seed_site,2],site_offs[seed_site,1]])
+        out.append(nc_day.variables['mean_temperature'][site_offs[seed_site,2],site_offs[seed_site,1]])
 
     # Print mean temperature at each site for this date
     print ','.join(out)
