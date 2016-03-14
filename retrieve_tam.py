@@ -9,11 +9,15 @@ seeds_fn = '/home/sl_wib/seed_climate/seed_sites.csv'
 seeds = np.loadtxt(seeds_fn,skiprows=1,delimiter=',')
 
 thredds = 'http://thredds.met.no/thredds/dodsC/arcticdata/met.no/tam24hNOgrd1957on/tam24hNOgrd1957on_{0}_{1}_{2}.nc'#.format(year,str(month).zfill(2),str(day).zfill(2)
+metv2 = '/space/wib_data/CLIMATE/METNO/senorgeV2/temperature/{0}{1}/seNorge_v2_0_TEMP1d_grid_{0}{1}{2}'#.format(year,str(month).zfill(2),str(day).zfill(2)
 # tam_date = netCDF4.Dataset(thredds.format(year,str(month).zfill(2),str(day).zfill(2)),'r')
 # tam = tam_date.variables['tam'][y,x] # or [x,y]?
-tam1 = netCDF4.Dataset(thredds.format(1999,'08','02'),'r')
-xc = tam1.variables['Xc'][:] - 500 # left cell edge??
-yc = tam1.variables['Yc'][:] + 500 # Top cell edge??
+# tam1 = netCDF4.Dataset(thredds.format(1999,'08','02'),'r')
+# xc = tam1.variables['Xc'][:] - 500 # left cell edge??
+# yc = tam1.variables['Yc'][:] + 500 # Top cell edge??
+tam1 = netCDF4.Dataset(metv2.format(1999,'08','02'),'r')
+xc = tam1.variables['X'][:] - 500 # left cell edge??
+yc = tam1.variables['Y'][:] + 500 # Top cell edge??
 
 ### convert decimal degree coordinates to utm33
 utm33n = osr.SpatialReference()
