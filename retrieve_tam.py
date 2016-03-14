@@ -84,7 +84,7 @@ while year < end_year+1:
 
     # Print mean temperature at each site for this date
     print ','.join(out)
-    
+
     # Iterate date
     i_date = i_date+dt.timedelta(days=1)
 
