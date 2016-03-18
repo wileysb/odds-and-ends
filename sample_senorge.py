@@ -185,11 +185,15 @@ if __name__ == '__main__':
         # Load netcdf
         try:
             nc_day = netCDF4.Dataset(metv2.format(year, month, day), 'r')
+            try:
+                data = nc_day.variables[varname][:]
+            except KeyError:
+                print nc_day.variables.keys()
             out = [i_date.isoformat(), ]
 
             # Iterate over seed_sites
             for site in range(len(input_sites)):
-                site_day_val = nc_day.variables[varname][0, input_sites[site][1], input_sites[site][0]]
+                site_day_val = data[0, input_sites[site][1], input_sites[site][0]]
                 out.append(str(round(float(site_day_val), 1)))
 
             # Print mean temperature at each site for this date
