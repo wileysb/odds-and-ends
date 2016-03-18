@@ -199,3 +199,5 @@ if __name__ == '__main__':
         year = i_date.year
         prog_i += 1
         progress_bar.check(prog_i)
+
+    output_file.close()
