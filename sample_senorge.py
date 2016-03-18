@@ -1,4 +1,6 @@
 import argparse
+import sys
+import math
 import ogr
 import osr
 import csv
@@ -17,6 +19,52 @@ metv2 = '/space/wib_data/CLIMATE/METNO/senorgeV2/temperature/' \
 tam1 = netCDF4.Dataset(metv2.format(1999, '08', '02'), 'r')
 xc = tam1.variables['X'][:] - 500  # left cell edge??
 yc = tam1.variables['Y'][:] + 500  # Top cell edge??
+
+
+class Countdown:
+    def __init__(self, count_max, update_interval=None, barlen=50):
+        self.update_interval = update_interval
+        self.barlen = int(barlen)
+        self.count_max = float(count_max)
+        self.status = ""
+        if self.update_interval:
+            self.count_update = self.count_max * self.update_interval
+
+    def update_progress(self):
+        if isinstance(self.progress, int):
+            self.progress = float(self.progress)
+        if not isinstance(self.progress, float):
+            self.progress = 0
+            self.status = "error: progress var must be float\r\n"
+        if self.progress < 0:
+            self.progress = 0
+            self.status = "Halt...\r\n"
+        if self.progress >= 1:
+            self.progress = 1
+            self.status = "Done...\r\n"
+        block = int(round(self.barlen*self.progress))
+        prog = int(self.progress*100)
+        text = "\r[{0}] {1}% {2}".format("="*block + " "*(self.barlen-block), prog, self.status)
+        sys.stdout.write(text)
+        sys.stdout.flush()
+
+    def check(self, val):
+        self.progress = float(val) / self.count_max
+        if self.update_interval:
+            if int(math.fmod(val, self.count_update)) == 0:
+                self.update_progress()
+        else:
+            self.update_progress()
+
+    def flush(self):
+        if not self.status == "Done...\r\n":
+            self.status = "Done...\r\n"
+            self.progress = 1
+            block = int(round(self.barlen*self.progress))
+            prog = int(self.progress*100)
+            text = "\r[{0}] {1}% {2}".format("="*block + " "*(self.barlen-block), prog, self.status)
+            sys.stdout.write(text)
+            sys.stdout.flush()
 
 
 def define_command_parser():
@@ -86,7 +134,14 @@ if __name__ == '__main__':
     # Elevation!
 
     # Temperature/Precipitation?
-    varname = 'mean_temperature'  # or whatever it is for precipitation
+    if 'emp' in args.dset:  # daily mean temperature
+        varname = 'mean_temperature'  # or whatever it is for precipitation
+        ncfmt = '/space/wib_data/CLIMATE/METNO/senorgeV2/temperature/' \
+                '{0}{1}/seNorge_v2_0_TEMP1d_grid_{0}{1}{2}.nc'
+    elif 'precip' in args.dset:  # daily precipitation
+        varname = 'precipitation_amount'
+        ncfmt = '/space/wib_data/CLIMATE/METNO/senorgeV2/precip/' \
+                '{0}{1}/seNorge_v2_0_PREC1d_grid_{0}{1}{2}_{0}{1}{2}.nc'  # Double date is a typo in the file names
 
     # Load input coordinates
     input_file = open(args.inputfile, 'r')
@@ -114,6 +169,10 @@ if __name__ == '__main__':
         header_block[i].insert(0, input_header[i])
         writer.writerow(header_block[i])
 
+    count_max = 365*(args.lastyear - args.firstyear)
+    progress_bar = Countdown(count_max)
+    prog_i = 0
+
     # Iterate over dates
     year = args.firstyear
     i_date = dt.date(args.firstyear, 1, 1)
@@ -138,3 +197,5 @@ if __name__ == '__main__':
         # Iterate date
         i_date = i_date+dt.timedelta(days=1)
         year = i_date.year
+        prog_i += 1
+        progress_bar.check(prog_i)
