@@ -188,7 +188,7 @@ if __name__ == '__main__':
             try:
                 data = nc_day.variables[varname][:]
             except KeyError:
-                print nc_day.variables.keys()
+                print i_date.isoformat(), nc_day.variables.keys()
             out = [i_date.isoformat(), ]
 
             # Iterate over seed_sites
