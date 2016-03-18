@@ -11,12 +11,9 @@ import datetime as dt
 utm33n = osr.SpatialReference()
 utm33n.ImportFromEPSG(32633)
 
-# Define loading string for senorge files
-metv2 = '/space/wib_data/CLIMATE/METNO/senorgeV2/temperature/' \
-        '{0}{1}/seNorge_v2_0_TEMP1d_grid_{0}{1}{2}.nc'  # .format(year,str(month).zfill(2),str(day).zfill(2)
-
 # Load one file, get X and Y coordinates (UTM33)
-tam1 = netCDF4.Dataset(metv2.format(1999, '08', '02'), 'r')
+tam1 = netCDF4.Dataset('/space/wib_data/CLIMATE/METNO/senorgeV2/temperature/199908/'
+                       'seNorge_v2_0_TEMP1d_grid_19990802.nc', 'r')
 xc = tam1.variables['X'][:] - 500  # left cell edge??
 yc = tam1.variables['Y'][:] + 500  # Top cell edge??
 
@@ -184,7 +181,7 @@ if __name__ == '__main__':
 
         # Load netcdf
         try:
-            nc_day = netCDF4.Dataset(metv2.format(year, month, day), 'r')
+            nc_day = netCDF4.Dataset(ncfmt.format(year, month, day), 'r')
             try:
                 data = nc_day.variables[varname][:]
             except KeyError:
