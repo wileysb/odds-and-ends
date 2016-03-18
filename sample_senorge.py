@@ -196,7 +196,7 @@ if __name__ == '__main__':
                 site_day_val = data[0, input_sites[site][1], input_sites[site][0]]
                 out.append(str(round(float(site_day_val), 1)))
 
-            # Print mean temperature at each site for this date
+            # Write senorge value at each site for this date
             writer.writerow(out)
 
             # Iterate date
