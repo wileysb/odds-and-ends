@@ -183,21 +183,24 @@ if __name__ == '__main__':
         day = str(i_date.day).zfill(2)
 
         # Load netcdf
-        nc_day = netCDF4.Dataset(metv2.format(year, month, day), 'r')
-        out = [i_date.isoformat(), ]
+        try:
+            nc_day = netCDF4.Dataset(metv2.format(year, month, day), 'r')
+            out = [i_date.isoformat(), ]
 
-        # Iterate over seed_sites
-        for site in range(len(input_sites)):
-            site_day_val = nc_day.variables[varname][0, input_sites[site][1], input_sites[site][0]]
-            out.append(str(round(float(site_day_val), 1)))
+            # Iterate over seed_sites
+            for site in range(len(input_sites)):
+                site_day_val = nc_day.variables[varname][0, input_sites[site][1], input_sites[site][0]]
+                out.append(str(round(float(site_day_val), 1)))
 
-        # Print mean temperature at each site for this date
-        writer.writerow(','.join(out))
+            # Print mean temperature at each site for this date
+            writer.writerow(','.join(out))
 
-        # Iterate date
-        i_date = i_date+dt.timedelta(days=1)
-        year = i_date.year
-        prog_i += 1
-        progress_bar.check(prog_i)
+            # Iterate date
+            i_date = i_date+dt.timedelta(days=1)
+            year = i_date.year
+            prog_i += 1
+            progress_bar.check(prog_i)
+        except RuntimeError:
+            print 'No netcdf file for {0}, {1}'.format(args.dset, i_date.isoformat())
 
     output_file.close()
