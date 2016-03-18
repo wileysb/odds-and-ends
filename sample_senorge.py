@@ -193,7 +193,7 @@ if __name__ == '__main__':
                 out.append(str(round(float(site_day_val), 1)))
 
             # Print mean temperature at each site for this date
-            writer.writerow(','.join(out))
+            writer.writerow(out)
 
             # Iterate date
             i_date = i_date+dt.timedelta(days=1)
